@@ -64,7 +64,7 @@ int get_network_guess(const Matrix& image, std::vector<Multi_layer_perceptron>& 
     int best_digit= 0;
     double highest_score = network[0].get_weighted_sum(image);
 
-    for (int i=1; i < 10 ; ++i){
+    for (int i=1; i <= 10 ; ++i){
         double current_score = network[i].get_weighted_sum(image);
         if(current_score > highest_score){
             highest_score = current_score;
@@ -83,7 +83,7 @@ void multi_layer_perceptron_call(){
     //create a vecotr containing 10 specialized neurons
     std::vector<Multi_layer_perceptron> network;
     for (int i =0; i < 10; i++){
-        network.push_back(Multi_layer_perceptron(0.005,i));
+        network.push_back(Multi_layer_perceptron(0.001,i));
     }
 
     std::cout << "loading MNIST dataset.." << std::endl;
@@ -110,12 +110,17 @@ void multi_layer_perceptron_call(){
 
             if (network_guess == true_label){
                 correct_guesses++;
+            }else{
+                network[network_guess].force_update_negative(image);
+                network[true_label].force_update_positive(image);
             }
 
+            /*
             //train all 10 neuron on this sample, simulateosly 
             for (int n = 0; n < 10; ++n){    
                 network[n].train_sample(image,true_label);
             }
+            */
         }
         double accuracy = ((double)correct_guesses / handler.training_data.size()) * 100;
         std::cout << "epoch " << epoch << " training accuracy " << accuracy <<"%" << std::endl; 

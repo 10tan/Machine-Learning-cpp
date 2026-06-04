@@ -56,3 +56,17 @@ void Multi_layer_perceptron::train_sample(const Matrix& image, int true_digits){
     }
 
 }
+
+void Multi_layer_perceptron::force_update_positive(const Matrix& image){
+    bias += learning_rate * 1.0;
+    for (int i=0; i < 784; ++i){
+        weights[i] += learning_rate * 1.0 * image.data[i];
+    }
+}
+
+void Multi_layer_perceptron::force_update_negative(const Matrix& image){
+    bias += learning_rate * -1.0;
+    for(int i=0; i < 784; ++i){
+        weights[i] += learning_rate * -1.0 * image.data[i];
+    }
+}

@@ -24,6 +24,10 @@ class Multi_layer_perceptron{
 
         //trains the single neuron on the image sample
         void train_sample(const Matrix& image, int true_label);
+
+        void force_update_positive(const Matrix& image);
+
+        void force_update_negative(const Matrix& image);
 };
 
 #endif

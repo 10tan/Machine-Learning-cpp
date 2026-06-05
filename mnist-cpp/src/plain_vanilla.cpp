@@ -2,7 +2,7 @@
 #include <random>
 #include <cmath>
 #include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/sigmoid.hpp"
-/*
+
 Plain_vanilla::Plain_vanilla(){
                   weights_trans_1 = weights_rand(784,29);
                   weights_trans_2 = weights_rand(20,10);
@@ -13,7 +13,28 @@ Plain_vanilla::Plain_vanilla(){
                 
 }
 
-*/
+std::vector<std::vector<double>> Plain_vanilla::weight_updater(std::vector<std::vector<double>> weights, std::vector<double> output_err, std::vector<double> activation_val, double learning_rate){
+    int rows_w = weights.size();
+    int cols_w = weights[0].size();
+    for(int i =0; i < rows_w; i ++){
+        for (int j = 0; j < cols_w; j++){
+                weights[i][j] = weights[i][j] - learning_rate*(output_err[j]*activation_val[i]);
+        }
+    }
+    return weights;
+    
+}
+
+std::vector<double> Plain_vanilla::bias_updater(std::vector<double> bias, std::vector<double> output_err, double learning_rate){
+    int cols = bias.size();
+    for (int i =0; i < cols; i++){
+        bias[i] = bias[i] - learning_rate*output_err[i];
+    }
+    return bias;
+}
+
+
+
 
 std::vector<double> Plain_vanilla::image_loader_and_normalizer(const Matrix& image){
     std::vector<double> normalized;
@@ -24,25 +45,37 @@ std::vector<double> Plain_vanilla::image_loader_and_normalizer(const Matrix& ima
     return normalized;
 }
 
-double deri_sigm(double z){
-    return (z*exp(z)/ ( 1 + exp(-1 * z)));
-}
 
 std::vector<double> Plain_vanilla::output_error(int label, std::vector<double> activations, std::vector<double> predictions){
     std::vector<double> error_derivative_matrix;
-    error_derivative_matrix.reserve(10);
-    for (int i=0; i < 10; i++){
-        for(int i=0; i < 10; i++){
+
+    int cols = predictions.size();
+    error_derivative_matrix.reserve(cols);
+
+        for (int i=0; i < cols; i++){
         if ( i == label ){
             error_derivative_matrix.push_back((predictions[i]-1)* activations[i]*(1-activations[i]));
         }else{
             error_derivative_matrix.push_back((predictions[i]) * activations[i]*(1-activations[i]));
         }
     }
-
-    }
-
+    
     return error_derivative_matrix;
+}
+
+std::vector<double> Plain_vanilla::output_error_hidden(std::vector<double> output_err, std::vector<std::vector<double>> weights){
+    std::vector<double> hidden_error_derivative_matrix;
+    int cols = weights[0].size();
+    hidden_error_derivative_matrix.reserve(cols);
+
+    for (int i=0; i < cols; i++){
+        double sum = 0.0;
+        for (int j=0; j < output_err.size(); j++){
+            sum += output_err[j] * weights[i][j];
+        }
+        hidden_error_derivative_matrix.push_back(sum);
+    }
+    return hidden_error_derivative_matrix;
 }
 
 std::vector<double> Plain_vanilla::z_values(std::vector<std::vector<double>> weights, std::vector<double> bias, std::vector<double> input_vector){

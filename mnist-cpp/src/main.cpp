@@ -167,14 +167,36 @@ void plain_vanilla(){
     int random_num = distrib(gen);
 
     Ascii test_var;
-    test_var.pr_ascii(handler.training_data[random_num].image);
-
+    
     Plain_vanilla network;
-    int k = 10;
-    std::vector<double> check = network.bias_rand(k); 
-    for (const double attr : check){
-        std::cout << attr << std::endl ;
-    }
+    int epochs;
+    std::cout << "enter epoch : " ;
+    std::cin >> epochs;
+    double learning_rate = 0.005;
+    for (int i =0; i < epochs; i++){
+        int correct_guesses = 0;
+        test_var.pr_ascii(handler.training_data[random_num].image);
+        for (size_t j = 0; j < handler.training_data.size(); j++){
+            Matrix image = handler.training_data[j].image;
+            int label = handler.training_data[j].label;
+
+            std::vector<double> normalized_input = network.image_loader_and_normalizer(image);
+            std::vector<double> z1 = network.z_values(network.weights_trans_1, network.bias_1, normalized_input);
+            std::vector<double> a1 = network.activations(z1);
+            std::vector<double> z2 = network.z_values(network.weights_trans_2, network.bias_2, a1);
+            std::vector<double> a2 = network.activations(z2);
+            std::vector<double> output_err = network.output_error(label, a2, a2);
+            std::vector<double> hidden_err = network.output_error_hidden(output_err, network.weights_trans_2);
+            network.weights_trans_2 = network.weight_updater(network.weights_trans_2, output_err, a1, learning_rate);
+            network.bias_2 = network.bias_updater(network.bias_2, output_err, learning_rate);
+            network.weights_trans_1 = network.weight_updater(network.weights_trans_1, hidden_err, normalized_input, learning_rate);
+            network.bias_1 = network.bias_updater(network.bias_1, hidden_err, learning_rate);
+            
+        }
+        std::cout << "epoch " << i+1 << " completed" << std::endl;
+    }   
+
+
     
     
 

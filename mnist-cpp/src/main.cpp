@@ -1,7 +1,12 @@
 // #include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/perceptron.hpp"
 #include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/data_handler.hpp"
-#include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/multi_layer_perceptron.hpp"
+//#include "/home/hardy/Desktop/Cpp/IMachine-Learning-cpp/mnist-cpp/include/multi_layer_perceptron.hpp"
+
+#include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/plain_vanilla.hpp"
+#include "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/include/ascii.hpp"
 #include <iostream>
+#include <random>
+#include <vector>
 /*
 void perceptron_call(){
 
@@ -60,11 +65,13 @@ void perceptron_call(){
 
 }
 */
+
+/*
 int get_network_guess(const Matrix& image, std::vector<Multi_layer_perceptron>& network){
     int best_digit= 0;
     double highest_score = network[0].get_weighted_sum(image);
 
-    for (int i=1; i <= 10 ; ++i){
+    for (int i=1; i < 10 ; ++i){
         double current_score = network[i].get_weighted_sum(image);
         if(current_score > highest_score){
             highest_score = current_score;
@@ -83,7 +90,7 @@ void multi_layer_perceptron_call(){
     //create a vecotr containing 10 specialized neurons
     std::vector<Multi_layer_perceptron> network;
     for (int i =0; i < 10; i++){
-        network.push_back(Multi_layer_perceptron(0.001,i));
+        network.push_back(Multi_layer_perceptron(0.005,i));
     }
 
     std::cout << "loading MNIST dataset.." << std::endl;
@@ -110,17 +117,12 @@ void multi_layer_perceptron_call(){
 
             if (network_guess == true_label){
                 correct_guesses++;
-            }else{
+            }
+            else{
                 network[network_guess].force_update_negative(image);
                 network[true_label].force_update_positive(image);
             }
 
-            /*
-            //train all 10 neuron on this sample, simulateosly 
-            for (int n = 0; n < 10; ++n){    
-                network[n].train_sample(image,true_label);
-            }
-            */
         }
         double accuracy = ((double)correct_guesses / handler.training_data.size()) * 100;
         std::cout << "epoch " << epoch << " training accuracy " << accuracy <<"%" << std::endl; 
@@ -142,8 +144,44 @@ void multi_layer_perceptron_call(){
 
 }
 
+SOME PROBLEM WITH THE MULTI LAYER PERCEPTRON , WILL FIX IT SOMETIME LATER
+NOT MAKING A PLAIN VANILLA NEURAL NETWORK
+
+I ALSO INCLUDED A ASCII ART FILE , JUST WANTED TO 
+*/
+
+void plain_vanilla(){
+
+    DataHandler handler;
+    std::cout << "loading the dataset MNIST" << std::endl;
+    handler.loadTrainingData("/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/data/raw/train-images.idx3-ubyte", "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/data/raw/train-labels.idx1-ubyte");
+    handler.loadTestData("/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/data/raw/t10k-images.idx3-ubyte", "/home/hardy/Desktop/Cpp/Machine-Learning-cpp/mnist-cpp/data/raw/t10k-labels.idx1-ubyte");
+
+    if(handler.training_data.empty() || handler.test_data.empty()){
+        std::cout << "error loading dataset" << std::endl;
+    }
+    
+    std::random_device asc;
+    std::mt19937 gen(asc());
+    std::uniform_int_distribution<int> distrib(1,60000);
+    int random_num = distrib(gen);
+
+    Ascii test_var;
+    test_var.pr_ascii(handler.training_data[random_num].image);
+
+    Plain_vanilla network;
+    int k = 10;
+    std::vector<double> check = network.bias_rand(k); 
+    for (const double attr : check){
+        std::cout << attr << std::endl ;
+    }
+    
+    
+
+}
 int main(){
     //perceptron_call();
-    multi_layer_perceptron_call();
+    //multi_layer_perceptron_call();
+    plain_vanilla();
     return 0;
 }
